@@ -1,35 +1,39 @@
-@extends('layouts.app')
-
-@section('title', 'Daftar Produk')
-
-@section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
-    {{-- Breadcrumb dinamis --}}
-    <x-breadcrumb :items="[
-        'Produk' => route('products.index'),
-        'Daftar Produk' => ''
-    ]" />
-
+@extends('layouts.app') 
+ 
+@section('title', 'Daftar Produk') 
+ 
+@section('content') 
+<div class="container-xxl flex-grow-1 container-p-y"> 
+    {{-- Breadcrumb dinamis --}} 
+    <x-breadcrumb :items="[ 
+        'Produk' => route('products.index'), 
+        'Daftar Produk' => '' 
+    ]" /> 
+ 
     <!-- Responsive Table -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Daftar Produk</h5>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Daftar Produk</h5>
 
-            <!-- Search Form -->
-            <form action="{{ route('products.index') }}" method="GET" class="d-flex" style="width: 300px;">
-                <input type="text" name="search"
-                    class="form-control form-control me-2"
-                    placeholder="Cari..."
-                    value="{{ request('search') }}">
-                <button class="btn btn-primary btn-sm" type="submit">
-                    <i class="bx bx-search"></i>
-                </button>
-            </form>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive text-nowrap">
-                <table class="table table-bordered">
-                    <thead>
+        <!-- Search Form -->
+        <form action="{{ route('products.index') }}" method="GET" class="d-flex" style="width: 300px;">
+            <input
+                type="text"
+                name="search"
+                class="form-control form-control me-2"
+                placeholder="Cari..."
+                value="{{ request('search') }}"
+            >
+            <button class="btn btn-primary btn-sm" type="submit">
+                <i class="bx bx-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
                         <th>No</th>
                         <th>Foto</th>
@@ -39,47 +43,65 @@
                         <th>Stok</th>
                         <th>Actions</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($products as $index => $product)
+                </thead>
+
+                <tbody>
+                    @foreach ($products as $product)
                         <tr>
-                            <td>{{ $products->firstItem() + $index }}</td>
+                            <td>{{ $loop->iteration + ($products->currentPage() - 1) * $products->perPage() }}</td>
+
+                            {{-- FOTO PRODUK --}}
                             <td>
-                                @if($product->foto)
-                                    <img src="{{ asset('storage/' . $product->foto) }}" alt="{{ $product->nama }}" class="img-thumbnail" width="80">
-                                @else
-                                    <img src="../assets/img/avatars/5.png" alt="No Image" class="img-thumbnail" width="80">
-                                @endif
+                                <img
+                                    src="{{ $product->foto ? asset('storage/' . $product->foto) : asset('assets/img/default-product.png') }}"
+                                    alt="{{ $product->nama }}"
+                                    class="img-thumbnail"
+                                    width="80"
+                                >
                             </td>
+
                             <td>{{ $product->nama }}</td>
+
+                            {{-- BATAS DESKRIPSI --}}
                             <td>{{ Str::limit($product->deskripsi, 50) }}</td>
+
                             <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
                             <td>{{ $product->stok }}</td>
+
+                            {{-- ACTIONS --}}
                             <td>
-                                <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-primary">
                                     <i class="bx bx-edit"></i>
                                 </a>
-                                <form action="{{ route('products.destroy', $product) }}" method="POST" style="display: inline;">
+
+                                <form
+                                    id="delete-form-{{ $product->id }}"
+                                    action="{{ route('products.destroy', $product->id) }}"
+                                    method="POST"
+                                    style="display:inline;"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-danger"
+                                        onclick="deleteConfirm('{{ $product->id }}')"
+                                    >
                                         <i class="bx bx-trash"></i>
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center">Tidak ada data produk.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-             <!-- Pagination -->
-            <div class="mt-3 d-flex justify-content-center">
-                {{ $products->links() }}
-            </div>
+                    @endforeach
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-3 d-flex justify-content-center">
+            {{-- pagination backends --}}
+            {{ $products->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>

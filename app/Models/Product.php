@@ -2,34 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
     protected $fillable = [
+        'kategori_id',
+        'foto',
         'nama',
         'deskripsi',
         'harga',
         'stok',
-        'kategori_id',
-        'foto',
     ];
-
-    protected $casts = [
-        'harga' => 'decimal:2',
-    ];
-
-    public function category(): BelongsTo
+    // 👇 SOLUSI UNTUK ERROR RELATIONSHIP
+    public function kategori()
     {
+        // Mendefinisikan bahwa Produk ini "milik" (belongsTo) ke Model Category
+        // menggunakan foreign key 'kategori_id'
         return $this->belongsTo(Category::class, 'kategori_id');
     }
 
-    public function orders(): BelongsToMany
-    {
-        return $this->belongsToMany(Order::class, 'order_products')
-                    ->withPivot('jumlah', 'harga_satuan')
-                    ->withTimestamps();
-    }
 }
+

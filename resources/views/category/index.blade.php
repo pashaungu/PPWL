@@ -17,7 +17,6 @@
     </div>
     @endif
 
-    <!-- Responsive Table -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
@@ -27,26 +26,29 @@
                 </a>
             </div>
 
-            <!-- Search Form -->
             <form action="{{ route('category.index') }}" method="GET" class="d-flex" style="width: 300px;">
-                <input type="text" name="search"
-                    class="w-75 pr-10 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 me-2"
+                <input 
+                    type="text" 
+                    name="search"
+                    class="form-control me-2"
                     placeholder="Cari..."
-                    value="{{ request('search') }}">
+                    value="{{ request('search') }}"
+                >
                 <button class="btn btn-primary btn-sm" type="submit">
                     <i class="bx bx-search"></i>
                 </button>
             </form>
         </div>
+
         <div class="card-body">
             <div class="table-responsive text-nowrap">
                 <table class="table table-bordered">
                     <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @foreach ($categories as $category)
@@ -58,10 +60,19 @@
                                     <i class="bx bx-edit"></i>
                                 </a>
 
-                                <form id="delete-form-{{ $category->id }}" action="{{ route('category.destroy', $category->id) }}" method="POST" style="display:inline;">
+                                <form 
+                                    id="delete-form-{{ $category->id }}" 
+                                    action="{{ route('category.destroy', $category->id) }}" 
+                                    method="POST" 
+                                    style="display:inline;"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirm('{{ $category->id }}', '{{ $category->nama }}')">
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-sm btn-danger"
+                                        onclick="deleteConfirm('{{ $category->id }}')"
+                                    >
                                         <i class="bx bx-trash"></i>
                                     </button>
                                 </form>
@@ -71,7 +82,7 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination -->
+
             <div class="mt-3 d-flex justify-content-center">
                 {{ $categories->links('pagination::bootstrap-5') }}
             </div>
@@ -85,7 +96,7 @@
 <script>
 function deleteConfirm(id) {
     Swal.fire({
-        title: 'Yakin mau hapus kategori ini?',
+        title: 'Yakin mau hapus produk ini?',
         text: "Data yang sudah dihapus tidak bisa dikembalikan!",
         icon: 'warning',
         showCancelButton: true,
